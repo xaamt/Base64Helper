@@ -1,63 +1,36 @@
-﻿using System;
+﻿using FileDotNet;
+using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Security;
 using System.Windows.Forms;
 
-namespace Base84Tools.Common
+namespace Base64Tools
 {
     public sealed class FileService
     {
-        public string Name { get; set; }
-        public string Extension { set; get; }
-        public string Path { get; set; }
-        public byte[] ContentInBytes { set; get; }
-        public int ContentInBytesSize => ContentInBytes?.Length ?? 0;
-        public bool HasFileContentInBytes => ContentInBytesSize > 0;
-
-
-        public string ContentInBase64
-        {
-            set
-            {
-                try
-                {
-                    ContentInBytes = Convert.FromBase64String(value);
-                }
-                catch(FormatException ex)
-                {
-                    MessageBox.Show($"Invalid Base64 string: {ex.Message}", "Invalid Base64 error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                catch(Exception ex)
-                {
-                    MessageBox.Show($"Error Type: {ex.GetType()}\n\rError message: {ex.Message}", "Unknow error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                
-            }
-            get => HasFileContentInBytes ? Convert.ToBase64String(ContentInBytes,Base64FormattingOptions.InsertLineBreaks) : null;
-        }
-
-        public int ContentInBase64Size => ContentInBase64?.Length ?? 0;
-        public bool HasFileContentInBase64 => ContentInBase64Size > 0;
-        
-        
-        private OpenFileDialog OpenFileDialog { set; get; }
-        private SaveFileDialog SaveFileDialog { set; get; }
+        public FileInstance fileInstance { private set; get; }
+        private IFileHelper fileHelper { get; }
+        private OpenFileDialog OpenFileDialog { get; }
+        private SaveFileDialog SaveFileDialog { get; }
 
         public FileService()
         {
+            fileHelper = new FileHelper();
+            fileInstance = new FileInstance();
             OpenFileDialog = new OpenFileDialog
             {
                 Title = "Select a file",
                 Filter = "All files|*.*|Images Files|*.png;*.jpeg;*.gif;*.jpg;*.bmp;*.tiff;*.tif|PDF Files|*.pdf",
                 CheckFileExists = true,
-                CheckPathExists = true
+                CheckPathExists = true,
+                Multiselect = false
             };
-
             SaveFileDialog = new SaveFileDialog
             {
-                Title = "Save the file", Filter = "All files (*.*)|*.*", CheckPathExists = true
+                Title = "Save the file",
+                Filter = "All files (*.*)|*.*",
+                CheckPathExists = true
             };
         }
 
@@ -65,23 +38,25 @@ namespace Base84Tools.Common
         {
             if (OpenFileDialog.ShowDialog() == DialogResult.OK)
             {
+                var path = OpenFileDialog.FileName;
                 try
                 {
-                    Path = OpenFileDialog.FileName;
-                    Name = System.IO.Path.GetFileNameWithoutExtension(Path);
-                    Extension = System.IO.Path.GetExtension(Path);
+                    fileInstance.Path = path;
+                    fileInstance.Name = Path.GetFileNameWithoutExtension(path);
+                    fileInstance.Extension = Path.GetExtension(path);
+
                     return true;
                 }
                 catch(SecurityException ex)
                 {
                     MessageBox.Show($"Error message: {ex.Message}", "Security error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return false;
                 }
                 catch(Exception ex)
                 {
                     MessageBox.Show($"Error Type: {ex.GetType()}\n\rError message: {ex.Message}", "Unknow error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return false;
                 }
+
+                return false;
             }
 
             return false;
@@ -89,36 +64,29 @@ namespace Base84Tools.Common
 
         public bool UploadFile()
         {
-            if (!string.IsNullOrWhiteSpace(Path))
+            if (!string.IsNullOrWhiteSpace(fileInstance.Path))
             {
                 try
                 {
-                    using (var fileStream = new FileStream(Path, FileMode.Open, FileAccess.Read))
-                    {
-                        using (var reader = new BinaryReader(fileStream))
-                        {
-                            ContentInBytes = reader.ReadBytes(Convert.ToInt32(fileStream.Length));
-                        }
-                    }
+                    var ContentInBytes = fileHelper.LoadFile(fileInstance.Path);
 
                     if (ContentInBytes.Length > 0)
                     {
                         MessageBox.Show("Reading the file complete successfully.", "Reading successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        fileInstance.ContentInBytes = ContentInBytes;
                         return true;
                     }
 
                     MessageBox.Show("Reading the file Failed or file length is zero!", "Reading failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return false;
+
                 }
                 catch (SecurityException ex)
                 {
                     MessageBox.Show($"Error message: {ex.Message}", "Security error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return false;
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Error Type: {ex.GetType()}\n\rError message: {ex.Message}", "Unknow error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return false;
                 }
             }
 
@@ -127,10 +95,10 @@ namespace Base84Tools.Common
 
         public void SaveFile()
         {
-            if (HasFileContentInBytes)
+            if (fileInstance.HasFileContentInBytes)
             {
-                SaveFileDialog.FileName = Name;
-                SaveFileDialog.DefaultExt = Extension;
+                SaveFileDialog.FileName = fileInstance.Name;
+                SaveFileDialog.DefaultExt = fileInstance.Extension;
 
                 if (SaveFileDialog.ShowDialog() == DialogResult.OK)
                 {
@@ -138,10 +106,8 @@ namespace Base84Tools.Common
 
                     try
                     {
-                        using (var fileStream = new FileStream(saveFileDialogPath, FileMode.Create, FileAccess.Write))
-                        {
-                            fileStream.Write(ContentInBytes, 0, ContentInBytesSize);
-                        }
+                        fileHelper.SaveFile(fileInstance.ContentInBytes,saveFileDialogPath);
+                        
                         MessageBox.Show("File saved successfull", "Save Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     catch (Exception ex)
@@ -152,26 +118,13 @@ namespace Base84Tools.Common
             }
         }
 
-        public void Preview(string extension = null)
+        public void Preview(string extension)
         {
-            var tempPath = System.IO.Path.GetTempPath();
-
-            var tempFile = System.IO.Path.GetRandomFileName();
-
-            var tempFileWithExtension = $"{tempFile}.{extension ?? "tmp"}";
-
-            var fullPath = System.IO.Path.Combine(tempPath, tempFileWithExtension);
-
-            if (HasFileContentInBytes)
+            if (fileInstance.HasFileContentInBytes)
             {
                 try
                 {
-                    using(var fileStream = new FileStream(fullPath, FileMode.Create, FileAccess.Write))
-                    {
-                        fileStream.Write(ContentInBytes, 0, ContentInBytesSize);
-                    }
-
-                    Process.Start(fullPath);
+                    fileHelper.Preview(fileInstance.ContentInBytes, extension);
                 }
                 catch(SecurityException ex)
                 {
@@ -182,25 +135,64 @@ namespace Base84Tools.Common
                 {
                     MessageBox.Show($"There is no default application to open {extension} file.", "No Default Application", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                
             }
         }
 
-        public string SizeSuffix(long value)
+        public void ConvertToBase64()
         {
-            string[] SizeSuffixes = { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
-
-            if (value < 0) { return "-" + SizeSuffix(-value); }
-
-            var i = 0;
-            var dValue = (decimal)value;
-            while (Math.Round(dValue / 1024) >= 1)
+            try
             {
-                dValue /= 1024;
-                i++;
+                var result = fileHelper.ConvertToBase64(fileInstance.ContentInBytes);
+
+                if (result == null)
+                {
+                    MessageBox.Show("Invalid file content ", "Invalid Base64 error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    fileInstance.ContentInBase64 = result;  
+                }
+            }
+            catch (FormatException ex)
+            {
+                MessageBox.Show($"Invalid Base64 string: {ex.Message}", "Invalid Base64 error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error Type: {ex.GetType()}\n\rError message: {ex.Message}", "Unknow error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            return $"{dValue:n1} {SizeSuffixes[i]}";
+        }
+
+        public void ConvertFromBase64()
+        {
+            try
+            {
+                var result = fileHelper.ConvertFromBase64(fileInstance.ContentInBase64);
+
+                if (result?.Length > 0)
+                {
+                    fileInstance.ContentInBytes = result;
+                }
+                else
+                {
+                    MessageBox.Show("Invalid Base64 string content ", "Invalid Base64 error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (FormatException ex)
+            {
+                MessageBox.Show($"Invalid Base64 string: {ex.Message}", "Invalid Base64 error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error Type: {ex.GetType()}\n\rError message: {ex.Message}", "Unknow error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+
+        public string GetPopulatedFileSize()
+        {
+            return fileHelper.SizeSuffix(fileInstance.ContentInBytesSize);
         }
     }
 }

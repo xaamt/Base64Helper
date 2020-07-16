@@ -1,5 +1,4 @@
-﻿using Base84Tools.Common;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Windows.Forms;
 
@@ -19,6 +18,7 @@ namespace Base64Tools
         {
             fileServiceInput = new FileService();
             fileServiceOutput = new FileService();
+
             txtAddress.Text = string.Empty;
             txtContent.Text = string.Empty;
             txtInfo.Text = string.Empty;
@@ -26,12 +26,12 @@ namespace Base64Tools
             btnConvert.Enabled = false;
             btnCopy.Enabled = false;
 
+            cbAutoConvert.Checked = true;
             btnBase64Convert.Enabled = false;
             txtBase64Content.Text = string.Empty;
             txtBase64Info.Text = string.Empty;
             cbExtensions.Text = "File Format (Default: *.txt)";
             cbExtensions.Enabled = false;
-
             btnSaveAs.Enabled = false;
             btnPreview.Enabled = false;
         }
@@ -40,7 +40,7 @@ namespace Base64Tools
         {
             if (fileServiceInput.SelectFile())
             {
-                txtAddress.Text = $"{fileServiceInput.Path}";
+                txtAddress.Text = $"{fileServiceInput.fileInstance.Path}";
 
                 var dialogResult = MessageBox.Show(@"Do you want to convert this file", "Automatic Convert", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (dialogResult == DialogResult.Yes)
@@ -49,7 +49,7 @@ namespace Base64Tools
                 }
                 else
                 {
-                    txtInfo.Text = $"{fileServiceInput.Name}{fileServiceInput.Extension} is not loaded";
+                    txtInfo.Text = $"{fileServiceInput.fileInstance.Name}{fileServiceInput.fileInstance.Extension} is not loaded";
                     btnConvert.Enabled = true;
                 }
             }
@@ -65,14 +65,15 @@ namespace Base64Tools
         {
             if (fileServiceInput.UploadFile())
             {
-                txtInfo.Text = $"File Loaded, Content Size: {fileServiceInput.SizeSuffix(fileServiceInput.ContentInBytesSize)}, Base64 Length: {fileServiceInput.ContentInBase64Size}";
-                txtContent.Text = fileServiceInput.ContentInBase64;
-                btnBrowse.Enabled = false;
+                txtInfo.Text = $"File Loaded, Content Size: {fileServiceInput.GetPopulatedFileSize()}, Base64 Length: {fileServiceInput.fileInstance.ContentInBase64Size}";
+                fileServiceInput.ConvertToBase64();
+                txtContent.Text = fileServiceInput.fileInstance.ContentInBase64;
                 btnCopy.Enabled = true;
             }
             else
             {
-                btnBrowse.Enabled = true;
+                txtInfo.Text = $"{fileServiceInput.fileInstance.Name}{fileServiceInput.fileInstance.Extension} loading failed";
+                btnConvert.Enabled = false;
             }
         }
 
@@ -87,38 +88,42 @@ namespace Base64Tools
             Clipboard.SetText(txtContent.Text);
             MessageBox.Show("Base 64 string has been copied to clipboard", "Copy to Clipboard", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-
-        private void btnCancel_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
-        }
-
+        
         private void btnPaste_Click(object sender, EventArgs e)
         {
             txtBase64Content.Text = Clipboard.GetText();
+            if(cbAutoConvert.Checked)
+            {
+                btnBase64Convert_Click(sender, e);
+            }
         }
 
         private void btnBase64Convert_Click(object sender, EventArgs e)
         {
-            if(string.IsNullOrWhiteSpace(txtBase64Content.Text))
+            var base64TextArea = txtBase64Content.Text;
+
+            if (string.IsNullOrWhiteSpace(base64TextArea))
             {
                 MessageBox.Show("Base64 string cannot be empty or white space!", "Convert failed", MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
 
+                cbExtensions.Enabled = false;
+                btnSaveAs.Enabled = false;
+                btnPreview.Enabled = false;
+
                 return;
             }
 
-            fileServiceOutput.ContentInBase64 = txtBase64Content.Text;
+            fileServiceOutput.fileInstance.ContentInBase64 = base64TextArea;
+            fileServiceOutput.ConvertFromBase64();
 
-            if (!fileServiceOutput.HasFileContentInBytes || !fileServiceOutput.HasFileContentInBase64)
+            if (!fileServiceOutput.fileInstance.HasFileContentInBytes || !fileServiceOutput.fileInstance.HasFileContentInBase64)
             {
-                MessageBox.Show("Convert from Base64 string failed during invalid input value!", "Convert failed", MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-
+                txtBase64Info.Text = $"File Loaded Failed, Base64 Length: {fileServiceOutput.fileInstance.ContentInBase64Size}";
                 return;
             }
 
-            txtBase64Info.Text =  $"File Loaded, Content Size: {fileServiceOutput.SizeSuffix(fileServiceOutput.ContentInBytesSize)}, Base64 Length: {fileServiceOutput.ContentInBase64Size}";
+            txtBase64Info.Text =  $"File Loaded, Content Size: {fileServiceOutput.GetPopulatedFileSize()}, Base64 Length: {fileServiceOutput.fileInstance.ContentInBase64Size}";
 
             cbExtensions.Enabled = true;
             btnSaveAs.Enabled = true;
@@ -130,6 +135,11 @@ namespace Base64Tools
             fileServiceOutput.SaveFile();
         }
 
+        private void txtBase64Content_TextChanged(object sender, EventArgs e)
+        {
+            btnBase64Convert.Enabled = txtBase64Content.Text?.Length > 0;
+        }
+        
         private void btnPreviewExcel_Click(object sender, EventArgs e)
         {
             var fileExtensionCombo = cbExtensions.Text;
@@ -154,9 +164,9 @@ namespace Base64Tools
             Process.Start(@"http://www.xamt.pro");
         }
 
-        private void txtBase64Content_TextChanged(object sender, EventArgs e)
+        private void btnCancel_Click(object sender, EventArgs e)
         {
-            btnBase64Convert.Enabled = txtBase64Content.Text.Length > 0;
+            Application.Exit();
         }
     }
 }
