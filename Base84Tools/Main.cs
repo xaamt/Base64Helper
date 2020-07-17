@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Base64Tools
@@ -19,21 +20,27 @@ namespace Base64Tools
             fileServiceInput = new FileService();
             fileServiceOutput = new FileService();
 
-            txtAddress.Text = string.Empty;
-            txtContent.Text = string.Empty;
-            txtInfo.Text = string.Empty;
+            txtAddress.ResetText();
+            txtContent.ResetText();
+            txtInfo.ResetText();
             btnBrowse.Enabled = true;
             btnConvert.Enabled = false;
             btnCopy.Enabled = false;
 
             cbAutoConvert.Checked = true;
             btnBase64Convert.Enabled = false;
-            txtBase64Content.Text = string.Empty;
-            txtBase64Info.Text = string.Empty;
+            txtBase64Content.ResetText();
+            txtBase64Info.ResetText();
             cbExtensions.Text = "File Format (Default: *.txt)";
             cbExtensions.Enabled = false;
             btnSaveAs.Enabled = false;
             btnPreview.Enabled = false;
+
+            
+            cbSigTypes.DataSource = null;
+            cbSigTypes.Enabled = false;
+            lbSigTypesCount.Text = $"Type Count: {0}";
+            cbSigTypes.ResetText();
         }
 
         private void btnBrowse_Click(object sender, EventArgs e)
@@ -65,7 +72,7 @@ namespace Base64Tools
         {
             if (fileServiceInput.UploadFile())
             {
-                txtInfo.Text = $"File Loaded, Content Size: {fileServiceInput.GetPopulatedFileSize()}, Base64 Length: {fileServiceInput.fileInstance.ContentInBase64Size}";
+                txtInfo.Text = $"File Loaded, Content Size: {fileServiceInput.GetPopulatedFileSize()}";
                 fileServiceInput.ConvertToBase64();
                 txtContent.Text = fileServiceInput.fileInstance.ContentInBase64;
                 btnCopy.Enabled = true;
@@ -123,7 +130,16 @@ namespace Base64Tools
                 return;
             }
 
-            txtBase64Info.Text =  $"File Loaded, Content Size: {fileServiceOutput.GetPopulatedFileSize()}, Base64 Length: {fileServiceOutput.fileInstance.ContentInBase64Size}";
+            var sigTypes = fileServiceOutput.FileSignatureMatcher();
+
+            cbSigTypes.Enabled = true;
+            bsSigTypes.DataSource = sigTypes;
+            cbSigTypes.DataSource = null;
+            cbSigTypes.DataSource = bsSigTypes;
+
+            lbSigTypesCount.Text = $"Type Count: {sigTypes.Count()}";
+
+            txtBase64Info.Text =  $"File Loaded, Content Size: {fileServiceOutput.GetPopulatedFileSize()}, File Type: )";
 
             cbExtensions.Enabled = true;
             btnSaveAs.Enabled = true;
@@ -138,6 +154,7 @@ namespace Base64Tools
         private void txtBase64Content_TextChanged(object sender, EventArgs e)
         {
             btnBase64Convert.Enabled = txtBase64Content.Text?.Length > 0;
+            lblBase64Content.Text = $"Length: {txtBase64Content.TextLength}";
         }
         
         private void btnPreviewExcel_Click(object sender, EventArgs e)
@@ -158,8 +175,13 @@ namespace Base64Tools
 
             fileServiceOutput.Preview(fileExtenstion);
         }
+        
+        private void txtContent_TextChanged(object sender, EventArgs e)
+        {
+            lblContentLength.Text = $"Length: {txtContent.TextLength}";
+        }
 
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void tslblPoweredBy_Click(object sender, EventArgs e)
         {
             Process.Start(@"http://www.xamt.pro");
         }

@@ -1,5 +1,6 @@
 ﻿using FileDotNet;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Security;
@@ -193,6 +194,20 @@ namespace Base64Tools
         public string GetPopulatedFileSize()
         {
             return fileHelper.SizeSuffix(fileInstance.ContentInBytesSize);
+        }
+
+        public IEnumerable<FileSignature> FileSignatureMatcher()
+        {
+            var fileSignatures = fileHelper.FileSignatureMatcher(fileInstance.ContentInBytes);
+
+            //if (fileSignature != null)
+            //{
+            //    return (fileSignature.Name, fileSignature.Extensions);
+            //}
+
+            //return ("Unknown", "tmp");
+
+            return fileSignatures;
         }
     }
 }

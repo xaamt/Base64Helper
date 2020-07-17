@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace FileDotNet
 {
@@ -58,6 +60,28 @@ namespace FileDotNet
                 i++;
             }
             return $"{dValue:n1} {SizeSuffixes[i]}";
+        }
+        public IEnumerable<FileSignature> FileSignatureMatcher(byte[] file)
+        {
+            var result = FileSignatures.BigList
+                .OrderByDescending(x => x.SignatureLength)
+                .Where(item => file.Take(item.SignatureLength).SequenceEqual(item.Signature))
+                .ToList();
+
+            return result;
+        }
+        public FileSignature FileSignatureBestMatcher(byte[] file)
+        {
+            foreach (var item in FileSignatures.BigList.OrderByDescending(x => x.SignatureLength))
+            {
+                var isMatched = file.Take(item.SignatureLength).SequenceEqual(item.Signature);
+                if (isMatched)
+                {
+                    return item;
+                }
+            }
+
+            return null;
         }
     }
 }

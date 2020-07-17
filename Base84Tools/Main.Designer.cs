@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.ToBase64_GB = new System.Windows.Forms.GroupBox();
+            this.lblContentLength = new System.Windows.Forms.Label();
             this.txtInfo = new System.Windows.Forms.TextBox();
             this.lblInfo = new System.Windows.Forms.Label();
             this.btnCopy = new System.Windows.Forms.Button();
@@ -41,9 +42,11 @@
             this.btnBrowse = new System.Windows.Forms.Button();
             this.txtAddress = new System.Windows.Forms.TextBox();
             this.lblAddress = new System.Windows.Forms.Label();
-            this.btnCancel = new System.Windows.Forms.Button();
-            this.btnReload = new System.Windows.Forms.Button();
             this.gbBase64ToFile = new System.Windows.Forms.GroupBox();
+            this.lbSigTypesCount = new System.Windows.Forms.Label();
+            this.cbSigTypes = new System.Windows.Forms.ComboBox();
+            this.lblSigTypes = new System.Windows.Forms.Label();
+            this.lblBase64Content = new System.Windows.Forms.Label();
             this.cbAutoConvert = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.cbExtensions = new System.Windows.Forms.ComboBox();
@@ -55,13 +58,22 @@
             this.btnPaste = new System.Windows.Forms.Button();
             this.lblBase64_2 = new System.Windows.Forms.Label();
             this.txtBase64Content = new System.Windows.Forms.TextBox();
-            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.tslblPoweredBy = new System.Windows.Forms.ToolStripStatusLabel();
+            this.sp1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tslblRecords = new System.Windows.Forms.ToolStripStatusLabel();
+            this.btnReload = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.bsSigTypes = new System.Windows.Forms.BindingSource(this.components);
             this.ToBase64_GB.SuspendLayout();
             this.gbBase64ToFile.SuspendLayout();
+            this.statusStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bsSigTypes)).BeginInit();
             this.SuspendLayout();
             // 
             // ToBase64_GB
             // 
+            this.ToBase64_GB.Controls.Add(this.lblContentLength);
             this.ToBase64_GB.Controls.Add(this.txtInfo);
             this.ToBase64_GB.Controls.Add(this.lblInfo);
             this.ToBase64_GB.Controls.Add(this.btnCopy);
@@ -78,6 +90,16 @@
             this.ToBase64_GB.TabIndex = 0;
             this.ToBase64_GB.TabStop = false;
             this.ToBase64_GB.Text = "File to Base64";
+            // 
+            // lblContentLength
+            // 
+            this.lblContentLength.AutoSize = true;
+            this.lblContentLength.ForeColor = System.Drawing.Color.Sienna;
+            this.lblContentLength.Location = new System.Drawing.Point(63, 214);
+            this.lblContentLength.Name = "lblContentLength";
+            this.lblContentLength.Size = new System.Drawing.Size(52, 13);
+            this.lblContentLength.TabIndex = 49;
+            this.lblContentLength.Text = "Length: 0";
             // 
             // txtInfo
             // 
@@ -178,6 +200,7 @@
             this.txtContent.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtContent.Size = new System.Drawing.Size(531, 109);
             this.txtContent.TabIndex = 42;
+            this.txtContent.TextChanged += new System.EventHandler(this.txtContent_TextChanged);
             // 
             // btnBrowse
             // 
@@ -218,39 +241,12 @@
             this.lblAddress.Text = "Address :";
             this.lblAddress.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // btnCancel
-            // 
-            this.btnCancel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(178)));
-            this.btnCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnCancel.ImageKey = "cancel.png";
-            this.btnCancel.ImageList = this.imageListAction;
-            this.btnCancel.Location = new System.Drawing.Point(529, 599);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(90, 25);
-            this.btnCancel.TabIndex = 10;
-            this.btnCancel.Text = "Exit";
-            this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
-            // 
-            // btnReload
-            // 
-            this.btnReload.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.btnReload.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(178)));
-            this.btnReload.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnReload.ImageKey = "reset.png";
-            this.btnReload.ImageList = this.imageListAction;
-            this.btnReload.Location = new System.Drawing.Point(433, 599);
-            this.btnReload.Name = "btnReload";
-            this.btnReload.Size = new System.Drawing.Size(90, 25);
-            this.btnReload.TabIndex = 11;
-            this.btnReload.Text = "Reload";
-            this.btnReload.UseVisualStyleBackColor = true;
-            this.btnReload.Click += new System.EventHandler(this.btnReload_Click);
-            // 
             // gbBase64ToFile
             // 
+            this.gbBase64ToFile.Controls.Add(this.lbSigTypesCount);
+            this.gbBase64ToFile.Controls.Add(this.cbSigTypes);
+            this.gbBase64ToFile.Controls.Add(this.lblSigTypes);
+            this.gbBase64ToFile.Controls.Add(this.lblBase64Content);
             this.gbBase64ToFile.Controls.Add(this.cbAutoConvert);
             this.gbBase64ToFile.Controls.Add(this.label1);
             this.gbBase64ToFile.Controls.Add(this.cbExtensions);
@@ -264,10 +260,52 @@
             this.gbBase64ToFile.Controls.Add(this.txtBase64Content);
             this.gbBase64ToFile.Location = new System.Drawing.Point(12, 285);
             this.gbBase64ToFile.Name = "gbBase64ToFile";
-            this.gbBase64ToFile.Size = new System.Drawing.Size(607, 272);
+            this.gbBase64ToFile.Size = new System.Drawing.Size(607, 326);
             this.gbBase64ToFile.TabIndex = 12;
             this.gbBase64ToFile.TabStop = false;
             this.gbBase64ToFile.Text = "Base64 to File";
+            // 
+            // lbSigTypesCount
+            // 
+            this.lbSigTypesCount.AutoSize = true;
+            this.lbSigTypesCount.ForeColor = System.Drawing.Color.Sienna;
+            this.lbSigTypesCount.Location = new System.Drawing.Point(514, 252);
+            this.lbSigTypesCount.Name = "lbSigTypesCount";
+            this.lbSigTypesCount.Size = new System.Drawing.Size(74, 13);
+            this.lbSigTypesCount.TabIndex = 60;
+            this.lbSigTypesCount.Text = "Type Count: 0";
+            // 
+            // cbSigTypes
+            // 
+            this.cbSigTypes.BackColor = System.Drawing.Color.LavenderBlush;
+            this.cbSigTypes.FormattingEnabled = true;
+            this.cbSigTypes.Location = new System.Drawing.Point(175, 249);
+            this.cbSigTypes.MaxDropDownItems = 10;
+            this.cbSigTypes.Name = "cbSigTypes";
+            this.cbSigTypes.Size = new System.Drawing.Size(333, 21);
+            this.cbSigTypes.TabIndex = 59;
+            // 
+            // lblSigTypes
+            // 
+            this.lblSigTypes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblSigTypes.AutoSize = true;
+            this.lblSigTypes.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblSigTypes.Location = new System.Drawing.Point(6, 252);
+            this.lblSigTypes.Name = "lblSigTypes";
+            this.lblSigTypes.Size = new System.Drawing.Size(163, 13);
+            this.lblSigTypes.TabIndex = 58;
+            this.lblSigTypes.Text = "Possible Types By File Signature:";
+            this.lblSigTypes.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // lblBase64Content
+            // 
+            this.lblBase64Content.AutoSize = true;
+            this.lblBase64Content.ForeColor = System.Drawing.Color.Sienna;
+            this.lblBase64Content.Location = new System.Drawing.Point(63, 182);
+            this.lblBase64Content.Name = "lblBase64Content";
+            this.lblBase64Content.Size = new System.Drawing.Size(52, 13);
+            this.lblBase64Content.TabIndex = 57;
+            this.lblBase64Content.Text = "Length: 0";
             // 
             // cbAutoConvert
             // 
@@ -285,7 +323,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.label1.Location = new System.Drawing.Point(185, 243);
+            this.label1.Location = new System.Drawing.Point(185, 294);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(51, 13);
             this.label1.TabIndex = 55;
@@ -302,7 +340,7 @@
             "Image (*.png, *.jpg, *.gif)",
             "Text (*.txt, *.xml, *.htm)",
             "Word (*.docx, *.doc)"});
-            this.cbExtensions.Location = new System.Drawing.Point(284, 236);
+            this.cbExtensions.Location = new System.Drawing.Point(284, 287);
             this.cbExtensions.Name = "cbExtensions";
             this.cbExtensions.Size = new System.Drawing.Size(171, 23);
             this.cbExtensions.TabIndex = 54;
@@ -315,7 +353,7 @@
             this.btnPreview.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnPreview.ImageIndex = 14;
             this.btnPreview.ImageList = this.imageListAction;
-            this.btnPreview.Location = new System.Drawing.Point(461, 234);
+            this.btnPreview.Location = new System.Drawing.Point(461, 285);
             this.btnPreview.Name = "btnPreview";
             this.btnPreview.Size = new System.Drawing.Size(133, 25);
             this.btnPreview.TabIndex = 53;
@@ -330,7 +368,7 @@
             this.btnSaveAs.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnSaveAs.ImageIndex = 7;
             this.btnSaveAs.ImageList = this.imageListAction;
-            this.btnSaveAs.Location = new System.Drawing.Point(9, 236);
+            this.btnSaveAs.Location = new System.Drawing.Point(9, 287);
             this.btnSaveAs.Name = "btnSaveAs";
             this.btnSaveAs.Size = new System.Drawing.Size(129, 25);
             this.btnSaveAs.TabIndex = 52;
@@ -342,7 +380,7 @@
             // 
             this.txtBase64Info.BackColor = System.Drawing.Color.LavenderBlush;
             this.txtBase64Info.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(178)));
-            this.txtBase64Info.Location = new System.Drawing.Point(63, 197);
+            this.txtBase64Info.Location = new System.Drawing.Point(63, 213);
             this.txtBase64Info.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtBase64Info.MaxLength = 50;
             this.txtBase64Info.Name = "txtBase64Info";
@@ -356,7 +394,7 @@
             this.lblBase64Info.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblBase64Info.AutoSize = true;
             this.lblBase64Info.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblBase64Info.Location = new System.Drawing.Point(6, 202);
+            this.lblBase64Info.Location = new System.Drawing.Point(6, 218);
             this.lblBase64Info.Name = "lblBase64Info";
             this.lblBase64Info.Size = new System.Drawing.Size(50, 13);
             this.lblBase64Info.TabIndex = 50;
@@ -370,7 +408,7 @@
             this.btnBase64Convert.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnBase64Convert.ImageIndex = 11;
             this.btnBase64Convert.ImageList = this.imageListAction;
-            this.btnBase64Convert.Location = new System.Drawing.Point(483, 194);
+            this.btnBase64Convert.Location = new System.Drawing.Point(483, 210);
             this.btnBase64Convert.Name = "btnBase64Convert";
             this.btnBase64Convert.Size = new System.Drawing.Size(111, 25);
             this.btnBase64Convert.TabIndex = 49;
@@ -418,25 +456,84 @@
             this.txtBase64Content.TabIndex = 44;
             this.txtBase64Content.TextChanged += new System.EventHandler(this.txtBase64Content_TextChanged);
             // 
-            // linkLabel1
+            // statusStrip
             // 
-            this.linkLabel1.AutoSize = true;
-            this.linkLabel1.DisabledLinkColor = System.Drawing.Color.DimGray;
-            this.linkLabel1.LinkColor = System.Drawing.Color.DarkGray;
-            this.linkLabel1.Location = new System.Drawing.Point(13, 611);
-            this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(70, 13);
-            this.linkLabel1.TabIndex = 13;
-            this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "by XAMT.Pro";
-            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tslblPoweredBy,
+            this.sp1,
+            this.tslblRecords});
+            this.statusStrip.Location = new System.Drawing.Point(0, 654);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(634, 22);
+            this.statusStrip.SizingGrip = false;
+            this.statusStrip.TabIndex = 14;
+            this.statusStrip.Text = "statusStrip";
+            // 
+            // tslblPoweredBy
+            // 
+            this.tslblPoweredBy.Image = global::Base64Tools.Properties.Resources.about;
+            this.tslblPoweredBy.IsLink = true;
+            this.tslblPoweredBy.LinkBehavior = System.Windows.Forms.LinkBehavior.HoverUnderline;
+            this.tslblPoweredBy.LinkColor = System.Drawing.SystemColors.WindowText;
+            this.tslblPoweredBy.Name = "tslblPoweredBy";
+            this.tslblPoweredBy.Size = new System.Drawing.Size(158, 17);
+            this.tslblPoweredBy.Text = "Version 1.1.0 @ XAMT.Pro";
+            this.tslblPoweredBy.ToolTipText = "Powered by XAMT.Pro";
+            this.tslblPoweredBy.Click += new System.EventHandler(this.tslblPoweredBy_Click);
+            // 
+            // sp1
+            // 
+            this.sp1.ForeColor = System.Drawing.SystemColors.ControlDark;
+            this.sp1.Name = "sp1";
+            this.sp1.Size = new System.Drawing.Size(22, 17);
+            this.sp1.Text = "  |  ";
+            // 
+            // tslblRecords
+            // 
+            this.tslblRecords.Image = global::Base64Tools.Properties.Resources._014;
+            this.tslblRecords.Name = "tslblRecords";
+            this.tslblRecords.Size = new System.Drawing.Size(222, 17);
+            this.tslblRecords.Text = "File Signature Database: 536 (Records)";
+            this.tslblRecords.ToolTipText = "Record Counts Available in File Signature Database to Guess what is the file type" +
+    "";
+            // 
+            // btnReload
+            // 
+            this.btnReload.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnReload.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(178)));
+            this.btnReload.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnReload.ImageKey = "reset.png";
+            this.btnReload.ImageList = this.imageListAction;
+            this.btnReload.Location = new System.Drawing.Point(12, 617);
+            this.btnReload.Name = "btnReload";
+            this.btnReload.Size = new System.Drawing.Size(90, 25);
+            this.btnReload.TabIndex = 11;
+            this.btnReload.Text = "Reload";
+            this.btnReload.UseVisualStyleBackColor = true;
+            this.btnReload.Click += new System.EventHandler(this.btnReload_Click);
+            // 
+            // btnCancel
+            // 
+            this.btnCancel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnCancel.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(178)));
+            this.btnCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnCancel.ImageKey = "cancel.png";
+            this.btnCancel.ImageList = this.imageListAction;
+            this.btnCancel.Location = new System.Drawing.Point(529, 617);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(90, 25);
+            this.btnCancel.TabIndex = 10;
+            this.btnCancel.Text = "Exit";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(634, 638);
-            this.Controls.Add(this.linkLabel1);
+            this.ClientSize = new System.Drawing.Size(634, 676);
+            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.gbBase64ToFile);
             this.Controls.Add(this.btnReload);
             this.Controls.Add(this.btnCancel);
@@ -451,6 +548,9 @@
             this.ToBase64_GB.PerformLayout();
             this.gbBase64ToFile.ResumeLayout(false);
             this.gbBase64ToFile.PerformLayout();
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bsSigTypes)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -481,9 +581,18 @@
         private System.Windows.Forms.Button btnPreview;
         private System.Windows.Forms.Button btnSaveAs;
         private System.Windows.Forms.ComboBox cbExtensions;
-        private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox cbAutoConvert;
+        private System.Windows.Forms.Label lblContentLength;
+        private System.Windows.Forms.Label lblBase64Content;
+        private System.Windows.Forms.Label lblSigTypes;
+        private System.Windows.Forms.ComboBox cbSigTypes;
+        private System.Windows.Forms.Label lbSigTypesCount;
+        private System.Windows.Forms.BindingSource bsSigTypes;
+        private System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.ToolStripStatusLabel tslblPoweredBy;
+        private System.Windows.Forms.ToolStripStatusLabel sp1;
+        private System.Windows.Forms.ToolStripStatusLabel tslblRecords;
     }
 }
 

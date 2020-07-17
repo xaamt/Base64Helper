@@ -106,6 +106,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="FileDotNetMainIcon.ico" />
+    <None Include="Resources\014.png" />
+    <None Include="Resources\about.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FileDotNet\FileDotNet.csproj">
