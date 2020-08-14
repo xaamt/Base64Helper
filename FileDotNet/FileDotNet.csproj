@@ -7,8 +7,9 @@
     <PackageIcon>FileDotNetMainIcon.png</PackageIcon>
     <PackageIconUrl />
     <RepositoryType>nuget</RepositoryType>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Description>FileDotNet is a helper library to work with files in base64 format</Description>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

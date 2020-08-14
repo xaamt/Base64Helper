@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.ToBase64_GB = new System.Windows.Forms.GroupBox();
+            this.cbAutoLineBreak = new System.Windows.Forms.CheckBox();
             this.lblContentLength = new System.Windows.Forms.Label();
             this.txtInfo = new System.Windows.Forms.TextBox();
             this.lblInfo = new System.Windows.Forms.Label();
@@ -73,6 +74,7 @@
             // 
             // ToBase64_GB
             // 
+            this.ToBase64_GB.Controls.Add(this.cbAutoLineBreak);
             this.ToBase64_GB.Controls.Add(this.lblContentLength);
             this.ToBase64_GB.Controls.Add(this.txtInfo);
             this.ToBase64_GB.Controls.Add(this.lblInfo);
@@ -90,6 +92,16 @@
             this.ToBase64_GB.TabIndex = 0;
             this.ToBase64_GB.TabStop = false;
             this.ToBase64_GB.Text = "File to Base64";
+            // 
+            // cbAutoLineBreak
+            // 
+            this.cbAutoLineBreak.AutoSize = true;
+            this.cbAutoLineBreak.Location = new System.Drawing.Point(202, 222);
+            this.cbAutoLineBreak.Name = "cbAutoLineBreak";
+            this.cbAutoLineBreak.Size = new System.Drawing.Size(217, 17);
+            this.cbAutoLineBreak.TabIndex = 57;
+            this.cbAutoLineBreak.Text = "Auto Insert Line-Breaks (Every 76 Chars)";
+            this.cbAutoLineBreak.UseVisualStyleBackColor = true;
             // 
             // lblContentLength
             // 
@@ -191,6 +203,7 @@
             // txtContent
             // 
             this.txtContent.BackColor = System.Drawing.Color.LavenderBlush;
+            this.txtContent.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtContent.Location = new System.Drawing.Point(63, 101);
             this.txtContent.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtContent.MaxLength = 0;
@@ -477,7 +490,7 @@
             this.tslblPoweredBy.LinkColor = System.Drawing.SystemColors.WindowText;
             this.tslblPoweredBy.Name = "tslblPoweredBy";
             this.tslblPoweredBy.Size = new System.Drawing.Size(158, 17);
-            this.tslblPoweredBy.Text = "Version 1.1.0 @ XAMT.Pro";
+            this.tslblPoweredBy.Text = "Version 1.1.1 @ XAMT.Pro";
             this.tslblPoweredBy.ToolTipText = "Powered by XAMT.Pro";
             this.tslblPoweredBy.Click += new System.EventHandler(this.tslblPoweredBy_Click);
             // 
@@ -593,6 +606,7 @@
         private System.Windows.Forms.ToolStripStatusLabel tslblPoweredBy;
         private System.Windows.Forms.ToolStripStatusLabel sp1;
         private System.Windows.Forms.ToolStripStatusLabel tslblRecords;
+        private System.Windows.Forms.CheckBox cbAutoLineBreak;
     }
 }
 

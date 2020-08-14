@@ -25,6 +25,7 @@ namespace Base64Tools
             txtInfo.ResetText();
             btnBrowse.Enabled = true;
             btnConvert.Enabled = false;
+            cbAutoLineBreak.Checked = false;
             btnCopy.Enabled = false;
 
             cbAutoConvert.Checked = true;
@@ -73,7 +74,7 @@ namespace Base64Tools
             if (fileServiceInput.UploadFile())
             {
                 txtInfo.Text = $"File Loaded, Content Size: {fileServiceInput.GetPopulatedFileSize()}";
-                fileServiceInput.ConvertToBase64();
+                fileServiceInput.ConvertToBase64(cbAutoLineBreak.Checked);
                 txtContent.Text = fileServiceInput.fileInstance.ContentInBase64;
                 btnCopy.Enabled = true;
             }

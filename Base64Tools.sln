@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Base64Tools", "Base84Tools\Base64Tools.csproj", "{D12386A5-36FA-43EC-A3E9-6F5B732F4F1B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Base64Tools", "Base64Tools\Base64Tools.csproj", "{D12386A5-36FA-43EC-A3E9-6F5B732F4F1B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileDotNet", "FileDotNet\FileDotNet.csproj", "{3A58C57D-B27F-452F-85E8-B71C5B6883C2}"
 EndProject

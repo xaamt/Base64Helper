@@ -139,11 +139,11 @@ namespace Base64Tools
             }
         }
 
-        public void ConvertToBase64()
+        public void ConvertToBase64(bool insertLineBreak = false)
         {
             try
             {
-                var result = fileHelper.ConvertToBase64(fileInstance.ContentInBytes);
+                var result = fileHelper.ConvertToBase64(fileInstance.ContentInBytes, insertLineBreak);
 
                 if (result == null)
                 {

@@ -8,9 +8,9 @@ namespace FileDotNet
 {
     public sealed class FileHelper : IFileHelper
     {
-        public string ConvertToBase64(byte [] content)
+        public string ConvertToBase64(byte [] content, bool insertLineBreak = false)
         {
-            var result = content?.Length > 0 ? Convert.ToBase64String(content, Base64FormattingOptions.InsertLineBreaks) : null;
+            var result = content?.Length > 0 ? Convert.ToBase64String(content, insertLineBreak ? Base64FormattingOptions.InsertLineBreaks : Base64FormattingOptions.None) : null;
 
             return result;
         }
